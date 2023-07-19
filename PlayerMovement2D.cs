@@ -12,26 +12,31 @@ public class PlayerMovement2D : MonoBehaviour
     Rigidbody2D rb;
     bool isGrounded = true;
     bool facingRight = true;
+    bool dead;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        dead = GetComponent<PlayerHealth>().dead;
     }
 
     void Update()
     {
         // Move the player left and right using the A and D keys, flipping the character along the Y axis when turning.
         float horizontalInput = Input.GetAxis("Horizontal");
-        if(!facingRight && horizontalInput > 0)
+        if(!dead && !facingRight && horizontalInput > 0)
         {
             Flip();
         }
-        if(facingRight && horizontalInput < 0)
+        if(!dead && facingRight && horizontalInput < 0)
         {
             Flip();
         }
-        transform.position += new Vector3(horizontalInput * speed * Time.deltaTime, 0, 0);
+        if(!dead)
+        {
+            transform.position += new Vector3(horizontalInput * speed * Time.deltaTime, 0, 0);
+        }        
 
         //Change the Animation boolean
         if(horizontalInput == 0)
@@ -43,7 +48,7 @@ public class PlayerMovement2D : MonoBehaviour
              anim.SetBool("isRunning", true);
         }
         // Jump if the player is on the ground and presses the space bar
-        if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded)
+        if (!dead && Input.GetKeyDown(KeyCode.UpArrow) && isGrounded )
         {
             rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
             isGrounded = false;
@@ -55,7 +60,7 @@ public class PlayerMovement2D : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision)
     {
         // Check if the player has landed on the ground
-        if (collision.gameObject.tag == "Ground")
+        if (!dead && collision.gameObject.tag == "Ground")
         {
             isGrounded = true;
             anim.SetBool("landed", true);

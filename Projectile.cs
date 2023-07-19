@@ -38,7 +38,8 @@ public class Projectile : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player"))
         {
-            //Take health DestroyProjectile();
+            PlayerHealth playerH = other.gameObject.GetComponent<PlayerHealth>();
+            playerH.takeDamage(10);            //Take health DestroyProjectile();
         }
         if(!other.CompareTag("Enemy") && !other.CompareTag("Projectile"))
         {

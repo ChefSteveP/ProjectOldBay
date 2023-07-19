@@ -10,14 +10,19 @@ public class Weapon : MonoBehaviour
 
     public LineRenderer lineRenderer;
 
+    private void Awake() {
+       // PauseController =  GameObject.FindGameObjectWithTag("PauseBtn").GetComponent<Pause>();
+    }
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetButtonDown("Fire1"))
+        if(!Pause.isGamePaused)
         {
-            StartCoroutine(Shoot());
+            if(Input.GetButtonDown("Fire1"))
+            {
+                StartCoroutine(Shoot());
+            }  
         }
-        
     }
 
     IEnumerator Shoot(){
