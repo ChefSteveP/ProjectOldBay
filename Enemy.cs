@@ -164,6 +164,10 @@ public class Enemy : MonoBehaviour
                 Instantiate(projectile, transform.position, Quaternion.identity);
                 timeBtwShots = startTimeBtwShots;
             }
+            else if(PlayerHealth.dead) {
+                CurrentState = AISTATE.PATROL;
+                yield break;
+            }
             else {
                 timeBtwShots -= Time.deltaTime;
             }
