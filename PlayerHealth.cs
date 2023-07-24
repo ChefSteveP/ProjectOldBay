@@ -11,7 +11,7 @@ public class PlayerHealth : MonoBehaviour
     public GameObject player;
     private Animator anim;
     public GameObject deathEffect;
-    public bool dead;
+    public static bool dead;
     
     // Start is called before the first frame update
     void Start()

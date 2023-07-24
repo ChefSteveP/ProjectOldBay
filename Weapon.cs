@@ -36,11 +36,11 @@ public class Weapon : MonoBehaviour
             {
                 enemy.TakeDamage(damage);
             }
-            Instantiate(impactEffect, hitInfo.point, Quaternion.identity);
+            GameObject cloneImpact = Instantiate(impactEffect, hitInfo.point, Quaternion.identity);
             
             lineRenderer.SetPosition(0, firePoint.position);
             lineRenderer.SetPosition(1, hitInfo.point);
-            
+            Destroy(cloneImpact, 1f);
        }
        else 
        {
