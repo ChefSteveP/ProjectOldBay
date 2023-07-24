@@ -16,7 +16,7 @@ public class Weapon : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!Pause.isGamePaused)
+        if(!Pause.isGamePaused && !PlayerHealth.dead)
         {
             if(Input.GetButtonDown("Fire1"))
             {

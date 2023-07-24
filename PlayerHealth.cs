@@ -11,6 +11,7 @@ public class PlayerHealth : MonoBehaviour
     public GameObject player;
     private Animator anim;
     public GameObject deathEffect;
+    Rigidbody2D rb;
     public static bool dead;
     
     // Start is called before the first frame update
@@ -19,6 +20,7 @@ public class PlayerHealth : MonoBehaviour
         dead = false;
         health = maxHealth;
         anim = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -34,16 +36,19 @@ public class PlayerHealth : MonoBehaviour
         }
         else {
             healthBar.fillAmount = 0;
-            StartCoroutine(Die());
+            if(!dead){
+                StartCoroutine(Die());
+            }
         }
     }
 
     IEnumerator Die(){
         anim.SetTrigger("dieAnim");
-        Instantiate(deathEffect, transform.position, transform.rotation);
+        GameObject cloneDeathEffect = Instantiate(deathEffect, transform.position, transform.rotation);
         yield return new WaitForSeconds(1f);
         dead = true;
         //disable PlayerMovement2d
         GetComponent<PlayerMovement2D>().enabled =false;
+        Destroy(cloneDeathEffect, 1f);
     }
 }

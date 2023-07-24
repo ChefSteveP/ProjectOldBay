@@ -160,7 +160,7 @@ public class Enemy : MonoBehaviour
             //Stop Running
             anim.SetBool("isRunning", false);
             //Shoot
-            if(!isDead && timeBtwShots <=0){
+            if(!isDead && !PlayerHealth.dead && timeBtwShots <=0){
                 Instantiate(projectile, transform.position, Quaternion.identity);
                 timeBtwShots = startTimeBtwShots;
             }
