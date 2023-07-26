@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    public float speed;
     private Transform player;
     private Vector2 target;
     public GameObject impactEffect;
@@ -27,10 +26,10 @@ public class Projectile : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other) {
         if(other.CompareTag("Player"))
         {
-            PlayerHealth playerH = other.gameObject.GetComponent<PlayerHealth>();
-            playerH.takeDamage(10);            //Take health DestroyProjectile();
+            other.gameObject.GetComponent<PlayerHealth>().takeDamage(10);
+            DestroyProjectile();       
         }
-        if(!other.CompareTag("Enemy") && !other.CompareTag("Projectile"))
+        else if(!other.CompareTag("Enemy") && !other.CompareTag("Projectile"))
         {
             DestroyProjectile();
         }

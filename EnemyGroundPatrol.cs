@@ -2,25 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class EnemyGroundPatrol : MonoBehaviour
 {
     // Start is called before the first frame update
-    public enum AISTATE {PATROL=0, CHASE=1, ATTACK=2, RETREAT=3};
+    public enum AISTATE {PATROL=0, CHASE=1, ATTACK=2};
     public Transform player;
-    public GameObject deathEffect;
     public GameObject projectile;
     public GameObject[] Waypoints = null;
     private Animator anim;
-    public int enemyHealth = 100;
+    private EnemyController enemyController;
     public float runSpeed;
     public float patrolSpeed;
     public float attackDistance;
-    public float retreatDistance;
     public float lostDistance;
     public float timeBtwShots;
     public float startTimeBtwShots;
     private bool facingRight = true;
-    private bool isDead = false;
  
 
     public AISTATE CurrentState {
@@ -41,44 +38,23 @@ public class Enemy : MonoBehaviour
             case AISTATE.ATTACK:
                 StartCoroutine(StateAttack());
                 break;
-            case AISTATE.RETREAT:
-                StartCoroutine(StateRetreat());
-                break;
             }
         }
     }
-    [SerializeField]
-    private AISTATE _CurrentState = AISTATE.PATROL;
+    [SerializeField] private AISTATE _CurrentState = AISTATE.PATROL;
 
     private void Awake() {
         player = GameObject.FindGameObjectWithTag("Player").transform;
         anim = GetComponent<Animator>();
+        enemyController = GetComponent<EnemyController>();
     }
     void Start() {
         timeBtwShots = startTimeBtwShots;
         CurrentState = AISTATE.PATROL;
     }
 
-    //Apply Damage to Enemy
-    public void TakeDamage(int damage){
-        enemyHealth -= damage;
-        if(enemyHealth <= 0){
-            StartCoroutine(Die());
-        }
-    }
-
-    //On death, create death animation effects destroy object
-    IEnumerator Die(){
-        isDead = true;
-        anim.SetTrigger("dieAnim");
-        GameObject cloneDeathEffect = Instantiate(deathEffect, transform.position, transform.rotation);
-        yield return new WaitForSeconds(1f);
-        Destroy(gameObject);
-        Destroy(cloneDeathEffect, 1f);
-    }
 
     private void Flip(){
-
         //Flip along the Y axis, this also flips all children of the character. 
         transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y,transform.localScale.z);
         //change direction
@@ -152,15 +128,20 @@ public class Enemy : MonoBehaviour
                 CurrentState = AISTATE.CHASE;
                 yield break;
             }
-            //If player is too close back up
-            // if(Vector3.Distance(transform.position, player.position) < retreatDistance){
-            //     CurrentState = AISTATE.RETREAT;
-            //     yield break;
-            // }
+
             //Stop Running
             anim.SetBool("isRunning", false);
+
+            //face player
+            if(transform.position.x > player.position.x && facingRight){
+                Flip();
+            }
+            else if(transform.position.x < player.position.x && !facingRight){
+                Flip();
+            }
+            
             //Shoot
-            if(!isDead && !PlayerHealth.dead && timeBtwShots <=0){
+            if(!enemyController.isDead && !PlayerHealth.dead && timeBtwShots <=0){
                 Instantiate(projectile, transform.position, Quaternion.identity);
                 timeBtwShots = startTimeBtwShots;
             }
@@ -170,29 +151,6 @@ public class Enemy : MonoBehaviour
             }
             else {
                 timeBtwShots -= Time.deltaTime;
-            }
-            yield return null;
-        }
-    }
-
-    public IEnumerator StateRetreat(){
-
-        while(CurrentState == AISTATE.RETREAT){
-            anim.SetBool("isRunning", true);
-
-            //If proper retreat distance has been reached start shooting
-            if(Vector3.Distance(transform.position, player.position) > retreatDistance){
-                CurrentState = AISTATE.ATTACK;
-                yield break;
-            }
-            transform.position = Vector2.MoveTowards(transform.position, player.position, -runSpeed * Time.deltaTime);
-
-            //Flip when appropriate
-            if(transform.position.x > player.position.x && facingRight){
-                Flip();
-            }
-            else if(transform.position.x < player.position.x && !facingRight){
-                Flip();
             }
             yield return null;
         }

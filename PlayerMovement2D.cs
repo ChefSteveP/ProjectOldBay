@@ -11,8 +11,7 @@ public class PlayerMovement2D : MonoBehaviour
     Rigidbody2D rb;
     bool isGrounded = true;
     bool facingRight = true;
-    void Start()
-    {
+    private void Awake() {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
     }

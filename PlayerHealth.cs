@@ -32,7 +32,7 @@ public class PlayerHealth : MonoBehaviour
     public void takeDamage(int damage){
         health -= damage;
         if(health > 0){
-            healthBar.fillAmount = health / 100;
+            healthBar.fillAmount = health / maxHealth;
         }
         else {
             healthBar.fillAmount = 0;
@@ -45,10 +45,10 @@ public class PlayerHealth : MonoBehaviour
     IEnumerator Die(){
         anim.SetTrigger("dieAnim");
         GameObject cloneDeathEffect = Instantiate(deathEffect, transform.position, transform.rotation);
-        yield return new WaitForSeconds(1f);
         dead = true;
         //disable PlayerMovement2d
-        GetComponent<PlayerMovement2D>().enabled =false;
+        GetComponent<PlayerMovement2D>().enabled =false;        
         Destroy(cloneDeathEffect, 1f);
+        yield return new WaitForSeconds(1f);
     }
 }
