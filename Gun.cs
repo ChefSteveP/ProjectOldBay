@@ -42,7 +42,7 @@ public class Gun : MonoBehaviour
         }
         
         
-        if(!Pause.isGamePaused && !PlayerHealth.dead && !isReloading)
+        if(!Pause.isGamePaused && !PlayerHealth.dead && !isReloading && !WeaponSwap.isHolstered)
         {
             if(Input.GetButtonDown("Fire1") && currentAmmo > 0)
             {
@@ -60,13 +60,18 @@ public class Gun : MonoBehaviour
 
        RaycastHit2D hitInfo =  Physics2D.Raycast(firePoint.position, firePoint.right);
        
-       if(hitInfo)
+       if(hitInfo && !Pause.isGamePaused)
        {
             EnemyController enemy = hitInfo.transform.GetComponent<EnemyController>();
             if(enemy)
             {
-                enemy.TakeDamage(damage);
+                if(hitInfo.collider.CompareTag("EnemyCrit")){
+                    enemy.TakeDamage(damage*5);
+                } else {
+                    enemy.TakeDamage(damage);
+                }
             }
+
             GameObject cloneImpact = Instantiate(impactEffect, hitInfo.point, Quaternion.identity);
             
             lineRenderer.SetPosition(0, firePoint.position);

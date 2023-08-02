@@ -9,6 +9,7 @@ public class PlayerMovement2D : MonoBehaviour
     public float jumpForce = 10f;
     private Animator anim;
     Rigidbody2D rb;
+    public GameObject critZone;
     bool isGrounded = true;
     bool facingRight = true;
     private void Awake() {
@@ -22,14 +23,46 @@ public class PlayerMovement2D : MonoBehaviour
         {
             // Move the player left and right using the A and D keys, flipping the character along the Y axis when turning.
             float horizontalInput = Input.GetAxis("Horizontal");
-            if(!facingRight && horizontalInput > 0)
-            {
-                Flip();
+
+            //holstered movement faces the movment direction
+            if(WeaponSwap.isHolstered){
+                if(!facingRight && horizontalInput > 0)
+                {
+                    Flip();
+                }
+                if(facingRight && horizontalInput < 0)
+                {
+                    Flip();
+                }
+            } 
+            //aiming movement faces the gun direction
+            else {
+                if(Aiming.mousePos.x < transform.position.x)
+                {
+                    if(facingRight){
+                        Flip();
+                    }
+                    if(horizontalInput > 0){
+                        anim.SetBool("isBackward", true);
+                    }
+                    else{
+                        anim.SetBool("isBackward", false);
+                    }
+                }
+                if(Aiming.mousePos.x > transform.position.x)
+                {
+                    if(!facingRight){
+                        Flip();
+                    }
+                    if(horizontalInput < 0){
+                        anim.SetBool("isBackward", true);
+                    }
+                    else{
+                        anim.SetBool("isBackward", false);
+                    }
+                }
             }
-            if(facingRight && horizontalInput < 0)
-            {
-                Flip();
-            }
+            
             transform.position += new Vector3(horizontalInput * speed * Time.deltaTime, 0, 0);
                   
             //Change the Animation boolean
@@ -48,6 +81,18 @@ public class PlayerMovement2D : MonoBehaviour
                 isGrounded = false;
                 anim.SetBool("landed", false);
                 anim.SetTrigger("jump");
+            }
+            if((Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) && isGrounded){
+                if(!anim.GetBool("isCrouching")){
+                    anim.SetBool("isCrouching", true);
+                    critZone.transform.position += new Vector3(0f,-0.5f,0f);
+                }
+            }
+            else{
+                if(anim.GetBool("isCrouching")){
+                    anim.SetBool("isCrouching", false);
+                    critZone.transform.position += new Vector3(0f,0.5f,0f);
+                }
             }
         }
     }

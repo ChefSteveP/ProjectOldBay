@@ -29,7 +29,12 @@ public class Projectile : MonoBehaviour
             other.gameObject.GetComponent<PlayerHealth>().takeDamage(10);
             DestroyProjectile();       
         }
-        else if(!other.CompareTag("Enemy") && !other.CompareTag("Projectile"))
+        else if(other.CompareTag("PlayerCrit"))
+        {
+            other.GetComponentInParent<PlayerHealth>().takeDamage(50);
+            DestroyProjectile();       
+        }
+        else if(!other.CompareTag("Enemy") && !other.CompareTag("Projectile") && !other.CompareTag("EnemyCrit"))
         {
             DestroyProjectile();
         }

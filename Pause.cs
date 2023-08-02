@@ -10,6 +10,15 @@ public class Pause : MonoBehaviour
         Time.timeScale = 0;
         isGamePaused = true;
     }
+    private void Update() {
+        if(Input.GetKeyDown(KeyCode.Escape)){
+            if(isGamePaused){
+                ContinueGame();
+            } else {
+                PauseGame();
+            }
+        }
+    }
     public void PauseGame(){
         PausePanel.SetActive(true);
         Time.timeScale = 0;

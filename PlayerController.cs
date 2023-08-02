@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         // Punch if the player presses the E key
-            if(Input.GetKeyDown(KeyCode.E)){
+            if(Input.GetKeyDown(KeyCode.E) && WeaponSwap.isHolstered && !PlayerHealth.dead){
                 anim.SetTrigger("punch");
                 StartCoroutine(fist.GetComponent<MeleeAttack>().Punch());
             }
