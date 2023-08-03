@@ -11,6 +11,7 @@ public class EnemyGroundPatrol : MonoBehaviour
     public GameObject[] Waypoints = null;
     private Animator anim;
     private EnemyController enemyController;
+    public GameObject fist;
     public float runSpeed;
     public float patrolSpeed;
     public float attackDistance;
@@ -51,8 +52,14 @@ public class EnemyGroundPatrol : MonoBehaviour
     void Start() {
         timeBtwShots = startTimeBtwShots;
         CurrentState = AISTATE.PATROL;
+        if(EnemyController.AttackType == EnemyController.ATTACKTYPE.MELEE){
+            attackDistance = 1.5f;
+            
+        }
+        else if (EnemyController.AttackType == EnemyController.ATTACKTYPE.RANGED){
+            attackDistance = 10f;
+        }
     }
-
 
     private void Flip(){
         //Flip along the Y axis, this also flips all children of the character. 
@@ -103,6 +110,7 @@ public class EnemyGroundPatrol : MonoBehaviour
                 CurrentState = AISTATE.ATTACK;
                 yield break;
             }
+            
             //If enemy gets too far away, stop chasing
             if(Vector3.Distance(transform.position, player.position) > lostDistance){
                 CurrentState = AISTATE.PATROL;
@@ -140,17 +148,31 @@ public class EnemyGroundPatrol : MonoBehaviour
                 Flip();
             }
             
-            //Shoot
-            if(!enemyController.isDead && !PlayerHealth.dead && timeBtwShots <=0){
-                Instantiate(projectile, transform.position, Quaternion.identity);
-                timeBtwShots = startTimeBtwShots;
+            if(EnemyController.AttackType == EnemyController.ATTACKTYPE.RANGED){
+                //Shoot
+                if(!enemyController.isDead && !PlayerHealth.dead && timeBtwShots <=0){
+                    Instantiate(projectile, transform.position, Quaternion.identity);
+                    timeBtwShots = startTimeBtwShots;
+                }
+                else if(PlayerHealth.dead) {
+                    CurrentState = AISTATE.PATROL;
+                    yield break;
+                }
+                else {
+                    timeBtwShots -= Time.deltaTime;
+                }
             }
-            else if(PlayerHealth.dead) {
-                CurrentState = AISTATE.PATROL;
-                yield break;
-            }
-            else {
-                timeBtwShots -= Time.deltaTime;
+            else if (EnemyController.AttackType == EnemyController.ATTACKTYPE.MELEE){
+                //Melee
+                if(!enemyController.isDead && !PlayerHealth.dead){
+                    //anim
+                    anim.SetTrigger("punch");
+                    StartCoroutine(fist.GetComponent<MeleeAttack>().Punch());
+                }
+                else if(PlayerHealth.dead) {
+                    CurrentState = AISTATE.PATROL;
+                    yield break;
+                }
             }
             yield return null;
         }

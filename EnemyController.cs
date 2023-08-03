@@ -8,6 +8,17 @@ public class EnemyController : MonoBehaviour
     [HideInInspector] public bool isDead = false;
     public GameObject deathEffect;
     private Animator anim;
+    public enum ATTACKTYPE {MELEE=0, RANGED=1};
+
+    public static ATTACKTYPE AttackType {
+        get {
+            return _AttackMode;
+        }
+        set {
+            _AttackMode = value;
+        }
+    }
+    public static ATTACKTYPE _AttackMode = ATTACKTYPE.MELEE;
 
     // Start is called before the first frame update
     void Start()
