@@ -12,6 +12,7 @@ public class PlayerMovement2D : MonoBehaviour
     public GameObject critZone;
     bool isGrounded = true;
     bool facingRight = true;
+    public GameObject gun;
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
@@ -41,6 +42,7 @@ public class PlayerMovement2D : MonoBehaviour
                 {
                     if(facingRight){
                         Flip();
+                        FlipGun();
                     }
                     if(horizontalInput > 0){
                         anim.SetBool("isBackward", true);
@@ -53,6 +55,7 @@ public class PlayerMovement2D : MonoBehaviour
                 {
                     if(!facingRight){
                         Flip();
+                        FlipGun();
                     }
                     if(horizontalInput < 0){
                         anim.SetBool("isBackward", true);
@@ -113,5 +116,12 @@ public class PlayerMovement2D : MonoBehaviour
         transform.Rotate(0f,180f,0f);
         //change direction
         facingRight = !facingRight;
+    }
+
+    //flips the gun along the X axis to correct for rotating above and below the player.
+    private void FlipGun()
+    {
+        //Flip along the Y axis, this also flips all children of the character. Like our firepoint.
+        gun.transform.Rotate(180f,0f,0f);
     }
 }

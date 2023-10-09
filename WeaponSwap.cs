@@ -5,6 +5,8 @@ using UnityEngine;
 public class WeaponSwap : MonoBehaviour
 {
     public static bool isHolstered = true;
+    [SerializeField]
+    public static bool haveGun = false;
     public GameObject weaponObject;
 
 
@@ -12,7 +14,7 @@ public class WeaponSwap : MonoBehaviour
     void Update()
     {
         if(!PlayerHealth.dead){
-            if(Input.GetKeyDown(KeyCode.Q)){
+            if(Input.GetKeyDown(KeyCode.Q) && haveGun){
             isHolstered = !isHolstered;
             }
             if(isHolstered)
@@ -23,5 +25,11 @@ public class WeaponSwap : MonoBehaviour
             }
         }
         
+    }
+    private void OnTriggerEnter2D(Collider2D other) {
+        if(other.gameObject.CompareTag("Gun")){
+            haveGun = true;
+            Destroy(other.gameObject);
+        }
     }
 }

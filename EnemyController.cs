@@ -8,22 +8,12 @@ public class EnemyController : MonoBehaviour
     [HideInInspector] public bool isDead = false;
     public GameObject deathEffect;
     private Animator anim;
-    public enum ATTACKTYPE {MELEE=0, RANGED=1};
-
-    public static ATTACKTYPE AttackType {
-        get {
-            return _AttackMode;
-        }
-        set {
-            _AttackMode = value;
-        }
-    }
-    public static ATTACKTYPE _AttackMode = ATTACKTYPE.MELEE;
+    public int animiationDelay = 1;
 
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator>();
+        if(GetComponent<Animator>()){anim = GetComponent<Animator>();}
     }
 
     // Update is called once per frame
@@ -43,9 +33,12 @@ public class EnemyController : MonoBehaviour
     //On death, create death animation effects destroy object
     IEnumerator Die(){
         isDead = true;
-        anim.SetTrigger("dieAnim");
+        if(anim != null){
+            anim.SetTrigger("dieAnim");
+        }
+        
         GameObject cloneDeathEffect = Instantiate(deathEffect, transform.position, transform.rotation);
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(animiationDelay);
         Destroy(gameObject);
         Destroy(cloneDeathEffect, 1f);
     }

@@ -7,6 +7,7 @@ public class EnemyGroundPatrol : MonoBehaviour
     // Start is called before the first frame update
     public enum AISTATE {PATROL=0, CHASE=1, ATTACK=2};
     public Transform player;
+    public Transform enemyPrefab;
     public GameObject projectile;
     public GameObject[] Waypoints = null;
     private Animator anim;
@@ -20,7 +21,17 @@ public class EnemyGroundPatrol : MonoBehaviour
     public float startTimeBtwShots;
     private bool facingRight = true;
  
+    public enum ATTACKTYPE {MELEE=0, RANGED=1};
 
+    public ATTACKTYPE AttackType {
+        get {
+            return _AttackType;
+        }
+        set {
+            _AttackType = value;
+        }
+    }
+    [SerializeField] private ATTACKTYPE _AttackType = ATTACKTYPE.MELEE;
     public AISTATE CurrentState {
         get {
             return _CurrentState;
@@ -52,13 +63,14 @@ public class EnemyGroundPatrol : MonoBehaviour
     void Start() {
         timeBtwShots = startTimeBtwShots;
         CurrentState = AISTATE.PATROL;
-        if(EnemyController.AttackType == EnemyController.ATTACKTYPE.MELEE){
+        if(AttackType == ATTACKTYPE.MELEE){
             attackDistance = 1.5f;
             
         }
-        else if (EnemyController.AttackType == EnemyController.ATTACKTYPE.RANGED){
+        else if (AttackType == ATTACKTYPE.RANGED){
             attackDistance = 10f;
         }
+        Physics2D.IgnoreLayerCollision(3, 3);
     }
 
     private void Flip(){
@@ -148,7 +160,8 @@ public class EnemyGroundPatrol : MonoBehaviour
                 Flip();
             }
             
-            if(EnemyController.AttackType == EnemyController.ATTACKTYPE.RANGED){
+            //Ranged Attacl
+            if(AttackType == ATTACKTYPE.RANGED){
                 //Shoot
                 if(!enemyController.isDead && !PlayerHealth.dead && timeBtwShots <=0){
                     Instantiate(projectile, transform.position, Quaternion.identity);
@@ -162,7 +175,8 @@ public class EnemyGroundPatrol : MonoBehaviour
                     timeBtwShots -= Time.deltaTime;
                 }
             }
-            else if (EnemyController.AttackType == EnemyController.ATTACKTYPE.MELEE){
+            //Melee Attack
+            else if (AttackType == ATTACKTYPE.MELEE){
                 //Melee
                 if(!enemyController.isDead && !PlayerHealth.dead){
                     //anim
