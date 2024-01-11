@@ -12,6 +12,7 @@ public class PlayerHealth : MonoBehaviour
     private Animator anim;
     public GameObject deathEffect;
     Rigidbody2D rb;
+    public GameObject RetryMenu;
     public static bool dead;
     
     // Start is called before the first frame update
@@ -23,11 +24,6 @@ public class PlayerHealth : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void takeDamage(int damage){
         health -= damage;
@@ -41,14 +37,33 @@ public class PlayerHealth : MonoBehaviour
             }
         }
     }
+    
+    private void OnCollisionEnter2D(Collision2D other) {
+        GameObject otherObj = other.gameObject;
+        //if the player collides with out of bounds, kill them
+        if(otherObj.CompareTag("OutOfBounds")){
+            if(!dead){
+                Debug.Log("Player out of bounds");
+                takeDamage(100);
+            }
+        }
+    }
 
     IEnumerator Die(){
         anim.SetTrigger("dieAnim");
         GameObject cloneDeathEffect = Instantiate(deathEffect, transform.position, transform.rotation);
         dead = true;
         //disable PlayerMovement2d
-        GetComponent<PlayerMovement2D>().enabled =false;        
+        GetComponent<PlayerMovement2D>().enabled = false;        
         Destroy(cloneDeathEffect, 1f);
+
+        //prompt retry menu
+        RetryMenu.SetActive(true);
         yield return new WaitForSeconds(1f);
+        WeaponSwap.haveGun = false;
+
+        
+        
+        //ReloadScene.ReloadLevel();
     }
 }

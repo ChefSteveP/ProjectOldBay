@@ -19,7 +19,9 @@ public class EnemyGroundPatrol : MonoBehaviour
     public float lostDistance;
     public float timeBtwShots;
     public float startTimeBtwShots;
+    [SerializeField]
     private bool facingRight = true;
+    public bool stationary = false;
  
     public enum ATTACKTYPE {MELEE=0, RANGED=1};
 
@@ -92,7 +94,7 @@ public class EnemyGroundPatrol : MonoBehaviour
             CurrentWaypoint = Waypoints[Random.Range(0, Waypoints.Length)].transform.position;
         }
 
-        while(CurrentState == AISTATE.PATROL){
+        while(CurrentState == AISTATE.PATROL && !enemyController.isDead){
             //Don't move if there is no waypoints;
             if(Waypoints.Length > 0){
                 transform.position = Vector2.MoveTowards(transform.position, CurrentWaypoint, patrolSpeed * Time.deltaTime);
@@ -114,7 +116,7 @@ public class EnemyGroundPatrol : MonoBehaviour
     //When Enemy sees player chase them to get in shooting range. 
     public IEnumerator StateChase(){
 
-        while(CurrentState == AISTATE.CHASE){
+        while(CurrentState == AISTATE.CHASE && !enemyController.isDead){
             anim.SetBool("isRunning", true);
 
             //If Enemy gets close enough, stop and attack
@@ -142,7 +144,7 @@ public class EnemyGroundPatrol : MonoBehaviour
     //When in shooting range, start firing.
     public IEnumerator StateAttack(){
 
-        while(CurrentState == AISTATE.ATTACK){
+        while(CurrentState == AISTATE.ATTACK && !enemyController.isDead){
             //If player is getting away run after them.
             if(Vector3.Distance(transform.position, player.position) > attackDistance){
                 CurrentState = AISTATE.CHASE;
@@ -180,8 +182,12 @@ public class EnemyGroundPatrol : MonoBehaviour
                 //Melee
                 if(!enemyController.isDead && !PlayerHealth.dead){
                     //anim
-                    anim.SetTrigger("punch");
-                    StartCoroutine(fist.GetComponent<MeleeAttack>().Punch());
+                    //wait 0.5 seconds before attacking
+                    yield return new WaitForSeconds(0.5f);
+                    if(!enemyController.isDead && !PlayerHealth.dead){
+                        anim.SetTrigger("punch");
+                        StartCoroutine(fist.GetComponent<MeleeAttack>().Punch());
+                    }
                 }
                 else if(PlayerHealth.dead) {
                     CurrentState = AISTATE.PATROL;
