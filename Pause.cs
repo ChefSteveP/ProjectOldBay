@@ -5,10 +5,10 @@ using UnityEngine;
 public class Pause : MonoBehaviour
 {
     public GameObject PausePanel;
-    public static bool isGamePaused = true;
+    public static bool isGamePaused = false;
     private void Awake() {
-        Time.timeScale = 0;
-        isGamePaused = true;
+        Time.timeScale = 1;
+        isGamePaused = false;
     }
     private void Update() {
         if(Input.GetKeyDown(KeyCode.Escape)){
